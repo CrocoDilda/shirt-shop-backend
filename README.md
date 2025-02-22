@@ -1,10 +1,10 @@
 # Shirt-shop
 
-Этот репозиторий бэкенда проекта Shirt-shop.
+Это репозиторий бэкенд части проекта Shirt-shop.
 
 ## Описание проекта / функционал
 
-С описанием проекта и функционалом можно ознакомиться в резозитории frontend части проекта [link-repo](link-repo)
+С описанием проекта и функционалом можно ознакомиться в резозитории frontend части проекта [https://github.com/CrocoDilda/shirt-shop](https://github.com/CrocoDilda/shirt-shop)
 
 ## Особенности
 
@@ -23,14 +23,14 @@
 
 ## Frontend
 
-Ознакомиться с frontend частью проекта можно по ссылке [link-repo](link-repo)
+Ознакомиться с frontend частью проекта можно по ссылке [https://github.com/CrocoDilda/shirt-shop](https://github.com/CrocoDilda/shirt-shop)
 
 ## Установка
 
 1. **Клонирование репозитория**
 
 ```bash
-git clone link-repo-backend.git
+git clone https://github.com/CrocoDilda/shirt-shop-backend.git
 cd shirt-shop-backend
 ```
 
