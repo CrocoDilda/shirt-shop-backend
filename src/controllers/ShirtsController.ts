@@ -1,57 +1,38 @@
 import { Request, Response } from "express"
-import pool from "../db" // Импорт соединения с БД
-import { sqlQueries } from "../utils/queries"
-import dotenv from "dotenv"
-// import { validateColors } from "../utils/utils"
-dotenv.config()
-
-function validateColors(colors: string[], validColors: string[]): boolean {
-  for (const color of colors) {
-    if (!validColors.includes(color)) {
-      return false // Возвращаем false, если найден некорректный цвет
-    }
-  }
-  return true // Все цвета валидны
-}
+import Shirt from "../models/Shirt"
+import { validateData, executeQuery } from "../utils/utils"
+import cache from "../cache"
+import { Op, Sequelize } from "sequelize"
 
 class PostController {
-  // Универсальная функция для выполнения SQL-запросов
-  async executeQuery(
-    req: Request,
-    res: Response,
-    query: string,
-    params: any[] = []
-  ) {
-    try {
-      const { rows } = await pool.query(query, params)
-      res.json(rows)
-    } catch (error) {
-      res.status(500).json({ error: "Ошибка при получении данных" })
+  async getAllShirts(req: Request, res: Response) {
+    await executeQuery(req, res, Shirt)
+  }
+
+  async getShirtsByColors(req: Request, res: Response) {
+    const { colors } = req.query
+    const colorArr = String(colors)
+      .split(",")
+      .map((c) => c.trim())
+    if (!validateData(colorArr, cache.cache.color)) {
+      res.status(400).json({ error: "Некорректные данные" })
+    } else {
+      await executeQuery(req, res, Shirt, {
+        where: Sequelize.literal(`color @> ARRAY['${colorArr.join("','")}']`),
+      })
     }
   }
 
-  // Получить все рубашки
-  async getAllShirts(req: Request, res: Response) {
-    await this.executeQuery(req, res, sqlQueries.getAllShirts)
-  }
-
-  // Фильтрация рубашек по цвету
-  async getShirtsByColors(req: Request, res: Response) {
-    const { colors } = req.query
-    const colorArr = String(colors).split(",")
-    const validColors = ["white", "black", "gray"]
-
-    validateColors(colorArr, validColors)
-
-    await this.executeQuery(req, res, sqlQueries.getShirtsByColors, [colorArr])
-  }
-
-  // Фильтрация рубашек по материалу
   async getShirtsByMaterial(req: Request, res: Response) {
     const { material } = req.params
-    await this.executeQuery(req, res, sqlQueries.getShirtsByMaterial, [
-      material,
-    ])
+    const materialArr = String(material).split(",")
+    if (!validateData(materialArr, cache.cache.material)) {
+      res.status(400).json({ error: "Некорректные данные" })
+    } else {
+      await executeQuery(req, res, Shirt, {
+        where: { material: { [Op.in]: materialArr } },
+      })
+    }
   }
 }
 

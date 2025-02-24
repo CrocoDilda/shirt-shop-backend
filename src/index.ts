@@ -2,6 +2,7 @@ import express from "express"
 import pg from "pg"
 import dotenv from "dotenv"
 import router from "./router"
+import cache from "./cache"
 
 dotenv.config()
 
@@ -12,6 +13,16 @@ const client = new Client({
     rejectUnauthorized: false,
   },
 })
+
+const initializeCache = async () => {
+  await Promise.all([
+    cache.getData("color"),
+    cache.getData("material"),
+    cache.getData("manufacturer"),
+  ])
+
+  console.log("Cache initialized")
+}
 
 const PORT = 3000
 const app = express()
@@ -25,6 +36,7 @@ async function startApp() {
       console.log(`Server running on  http://localhost:${PORT}`)
     })
     app.use("/", router)
+    initializeCache()
   } catch (error) {
     console.log(error)
   }
