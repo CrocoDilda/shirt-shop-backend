@@ -1,12 +1,12 @@
 import { Request, Response } from "express"
 import Shirt from "../models/Shirt"
-import { validateData, executeQuery } from "../utils/utils"
+import { validateData, executeGet } from "../utils/utils"
 import cache from "../cache"
 import { Op, Sequelize } from "sequelize"
 
-class PostController {
+class shirtController {
   async getAllShirts(req: Request, res: Response) {
-    await executeQuery(req, res, Shirt)
+    await executeGet(req, res, Shirt)
   }
 
   async getShirtsByColors(req: Request, res: Response) {
@@ -17,7 +17,7 @@ class PostController {
     if (!validateData(colorArr, cache.cache.color)) {
       res.status(400).json({ error: "Некорректные данные" })
     } else {
-      await executeQuery(req, res, Shirt, {
+      await executeGet(req, res, Shirt, {
         where: Sequelize.literal(`color @> ARRAY['${colorArr.join("','")}']`),
       })
     }
@@ -29,7 +29,7 @@ class PostController {
     if (!validateData(materialArr, cache.cache.material)) {
       res.status(400).json({ error: "Некорректные данные" })
     } else {
-      await executeQuery(req, res, Shirt, {
+      await executeGet(req, res, Shirt, {
         where: { material: { [Op.in]: materialArr } },
       })
     }
@@ -37,4 +37,4 @@ class PostController {
 }
 
 // Экспортируем сам экземпляр класса
-export default new PostController()
+export default new shirtController()

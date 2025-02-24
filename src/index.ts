@@ -1,7 +1,9 @@
 import express from "express"
 import pg from "pg"
 import dotenv from "dotenv"
-import router from "./router"
+import shirtRouter from "./routers/shirtRouter"
+import userRouter from "./routers/userRouter"
+
 import cache from "./cache"
 
 dotenv.config()
@@ -35,7 +37,8 @@ async function startApp() {
     app.listen(PORT, () => {
       console.log(`Server running on  http://localhost:${PORT}`)
     })
-    app.use("/", router)
+    app.use("/shirts", shirtRouter)
+    app.use("/users", userRouter)
     initializeCache()
   } catch (error) {
     console.log(error)
