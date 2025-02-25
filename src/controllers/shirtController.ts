@@ -36,5 +36,4 @@ class shirtController {
   }
 }
 
-// Экспортируем сам экземпляр класса
 export default new shirtController()

@@ -78,3 +78,5 @@ export async function executePost<T extends Model>(
     }
   }
 }
+
+const num = Math.trunc(Math.random() * (99999 - 10000) + 10000)

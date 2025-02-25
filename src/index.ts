@@ -3,6 +3,8 @@ import pg from "pg"
 import dotenv from "dotenv"
 import shirtRouter from "./routers/shirtRouter"
 import userRouter from "./routers/userRouter"
+import confirmationRouter from "./routers/confirmationRouter"
+import mail from "./mail/mail"
 
 import cache from "./cache"
 
@@ -33,12 +35,13 @@ app.use(express.json())
 async function startApp() {
   try {
     await client.connect()
-
     app.listen(PORT, () => {
       console.log(`Server running on  http://localhost:${PORT}`)
     })
     app.use("/shirts", shirtRouter)
     app.use("/users", userRouter)
+    app.use("/confirmation", confirmationRouter)
+
     initializeCache()
   } catch (error) {
     console.log(error)
