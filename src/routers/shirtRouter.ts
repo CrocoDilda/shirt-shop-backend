@@ -4,11 +4,12 @@ import cache from "../cache"
 
 const router = Router()
 
-router.get("/shirts", (req, res) => control.getAllShirts(req, res))
+router.get("/all", (req, res) => control.getAllShirts(req, res))
 router.get("/", (req, res) => control.getShirtsByColors(req, res))
 router.get("/material/:material", (req, res) =>
   control.getShirtsByMaterial(req, res)
 )
+router.get("/filter", control.filterShirts)
 
 router.get("/colors", async (req, res) => {
   const colors = await cache.getData("color")
@@ -24,7 +25,8 @@ router.get("/manufacturers", async (req, res) => {
   const manufacturers = await cache.getData("manufacturer")
   res.json(manufacturers)
 })
-router.get("/filter-data", (req, res) => cache.getAllCacheData(req, res))
+
+router.get("/filter-options", (req, res) => cache.getAllCacheData(req, res))
 
 export default router
 

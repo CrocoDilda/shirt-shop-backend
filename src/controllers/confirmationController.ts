@@ -19,7 +19,6 @@ const answers = {
 class ConfirmationController {
   async confirmedEmail(req: Request, res: Response) {
     const { email } = req.body
-    console.log("Email is: " + email)
     if (!isValidEmail(email)) {
       res.status(400).json({ error: answers.invalidEmail })
     } else {

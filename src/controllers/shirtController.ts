@@ -2,11 +2,15 @@ import { Request, Response } from "express"
 import Shirt from "../models/Shirt"
 import { validateData, executeGet } from "../utils/utils"
 import cache from "../cache"
-import { Op, Sequelize } from "sequelize"
+import { Op, Sequelize, FindOptions } from "sequelize"
 
 class shirtController {
   async getAllShirts(req: Request, res: Response) {
-    await executeGet(req, res, Shirt)
+    const options: FindOptions = {
+      order: [[Sequelize.fn("RANDOM"), "ASC"]],
+    } // Добавляем рандомайзер
+
+    await executeGet(req, res, Shirt, options)
   }
 
   async getShirtsByColors(req: Request, res: Response) {
@@ -32,6 +36,38 @@ class shirtController {
       await executeGet(req, res, Shirt, {
         where: { material: { [Op.in]: materialArr } },
       })
+    }
+  }
+
+  async filterShirts(req: Request, res: Response) {
+    const {
+      colors = cache.cache.color,
+      materials = cache.cache.materials,
+      manufacturer = cache.cache.manufacturers,
+      gender = "male,female",
+      sortOrder = "asc",
+    }: any = req.query
+
+    try {
+      const colorArr = String(colors)
+        .split(",")
+        .map((c) => c.trim())
+      const materialArr = String(materials).split(",")
+      const manufacturerArr = String(manufacturer).split(",")
+      const genderArr = String(gender).split(",")
+      await executeGet(req, res, Shirt, {
+        where: {
+          color: Sequelize.literal(
+            `color && ARRAY['${colorArr.join("','")}']::text[]`
+          ),
+          material: { [Op.in]: materialArr },
+          manufacturer: { [Op.in]: manufacturerArr },
+          gender: { [Op.in]: genderArr },
+        },
+        order: [["price", sortOrder]],
+      })
+    } catch (error) {
+      res.status(400).json({ error: "Некоректные данные" })
     }
   }
 }

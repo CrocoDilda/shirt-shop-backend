@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 import shirtRouter from "./routers/shirtRouter"
 import userRouter from "./routers/userRouter"
 import confirmationRouter from "./routers/confirmationRouter"
-import mail from "./mail/mail"
+import cors from "cors"
 
 import cache from "./cache"
 
@@ -31,6 +31,7 @@ const initializeCache = async () => {
 const PORT = 3000
 const app = express()
 app.use(express.json())
+app.use(cors())
 
 async function startApp() {
   try {
