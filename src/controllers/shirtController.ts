@@ -42,11 +42,18 @@ class shirtController {
   async filterShirts(req: Request, res: Response) {
     const {
       colors = cache.cache.color,
-      materials = cache.cache.materials,
-      manufacturer = cache.cache.manufacturers,
+      materials = cache.cache.material,
+      manufacturer = cache.cache.manufacturer,
       gender = "male,female",
       sortOrder = "asc",
     }: any = req.query
+
+    let order: any = []
+    if (sortOrder === "random") {
+      order = Sequelize.literal("RANDOM()")
+    } else {
+      order = [["price", sortOrder]]
+    }
 
     try {
       const colorArr = String(colors)
@@ -55,6 +62,7 @@ class shirtController {
       const materialArr = String(materials).split(",")
       const manufacturerArr = String(manufacturer).split(",")
       const genderArr = String(gender).split(",")
+
       await executeGet(req, res, Shirt, {
         where: {
           color: Sequelize.literal(
@@ -64,7 +72,7 @@ class shirtController {
           manufacturer: { [Op.in]: manufacturerArr },
           gender: { [Op.in]: genderArr },
         },
-        order: [["price", sortOrder]],
+        order: order,
       })
     } catch (error) {
       res.status(400).json({ error: "Некоректные данные" })
