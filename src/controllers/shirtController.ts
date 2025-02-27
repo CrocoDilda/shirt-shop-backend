@@ -39,6 +39,17 @@ class shirtController {
     }
   }
 
+  async getShirtsByName(req: Request, res: Response) {
+    const { name } = req.params
+    await executeGet(req, res, Shirt, {
+      where: {
+        name: {
+          [Op.iLike]: `%${name}%`,
+        },
+      },
+    })
+  }
+
   async filterShirts(req: Request, res: Response) {
     const {
       colors = cache.cache.color,

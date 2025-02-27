@@ -9,6 +9,7 @@ router.get("/", (req, res) => control.getShirtsByColors(req, res))
 router.get("/material/:material", (req, res) =>
   control.getShirtsByMaterial(req, res)
 )
+router.get("/name/:name", (req, res) => control.getShirtsByName(req, res))
 router.get("/filter", control.filterShirts)
 
 router.get("/colors", async (req, res) => {
