@@ -17,6 +17,10 @@ router.get("/colors", async (req, res) => {
   res.json(colors)
 })
 
+router.get("/id/:id", async (req, res) => {
+  await control.getShirtById(req, res)
+})
+
 router.get("/materials", async (req, res) => {
   const materials = await cache.getData("material")
   res.json(materials)

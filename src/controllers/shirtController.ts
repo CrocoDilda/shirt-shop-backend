@@ -14,40 +14,72 @@ class shirtController {
   }
 
   async getShirtsByColors(req: Request, res: Response) {
-    const { colors } = req.query
-    const colorArr = String(colors)
-      .split(",")
-      .map((c) => c.trim())
-    if (!validateData(colorArr, cache.cache.color)) {
-      res.status(400).json({ error: "Некорректные данные" })
-    } else {
-      await executeGet(req, res, Shirt, {
-        where: Sequelize.literal(`color @> ARRAY['${colorArr.join("','")}']`),
-      })
+    try {
+      const { colors } = req.query
+      const colorArr = String(colors)
+        .split(",")
+        .map((c) => c.trim())
+      if (!validateData(colorArr, cache.cache.color)) {
+        res.status(400).json({ error: "Некорректные данные" })
+      } else {
+        await executeGet(req, res, Shirt, {
+          where: Sequelize.literal(`color @> ARRAY['${colorArr.join("','")}']`),
+        })
+      }
+    } catch (error) {
+      console.error("Error getting shirts by colors:", error)
+      res.status(500).json({ error: "Error getting shirts by colors" })
     }
   }
 
   async getShirtsByMaterial(req: Request, res: Response) {
-    const { material } = req.params
-    const materialArr = String(material).split(",")
-    if (!validateData(materialArr, cache.cache.material)) {
-      res.status(400).json({ error: "Некорректные данные" })
-    } else {
-      await executeGet(req, res, Shirt, {
-        where: { material: { [Op.in]: materialArr } },
-      })
+    try {
+      const { material } = req.params
+      const materialArr = String(material).split(",")
+      if (!validateData(materialArr, cache.cache.material)) {
+        res.status(400).json({ error: "Некорректные данные" })
+      } else {
+        await executeGet(req, res, Shirt, {
+          where: { material: { [Op.in]: materialArr } },
+        })
+      }
+    } catch (error) {
+      console.error("Error getting shirts by material:", error)
+      res.status(500).json({ error: "Error getting shirts by material" })
     }
   }
 
   async getShirtsByName(req: Request, res: Response) {
-    const { name } = req.params
-    await executeGet(req, res, Shirt, {
-      where: {
-        name: {
-          [Op.iLike]: `%${name}%`,
+    try {
+      const { name } = req.params
+      await executeGet(req, res, Shirt, {
+        where: {
+          name: {
+            [Op.iLike]: `%${name}%`,
+          },
         },
-      },
-    })
+      })
+    } catch (error) {
+      console.error("Error getting shirts by name:", error)
+      res.status(500).json({ error: "Error getting shirts by name" })
+    }
+  }
+
+  async getShirtById(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+
+      if (!id || isNaN(Number(id))) {
+        return res.status(400).json({ error: "Invalid shirt ID" })
+      }
+
+      await executeGet(req, res, Shirt, {
+        where: { id: Number(id) },
+      })
+    } catch (error) {
+      console.error("Error getting shirt by ID:", error)
+      res.status(500).json({ error: "Error getting shirt by ID" })
+    }
   }
 
   async filterShirts(req: Request, res: Response) {
